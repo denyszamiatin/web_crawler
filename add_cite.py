@@ -22,6 +22,3 @@ def url_to_html(url):
     site=urllib.request.urlopen(url)
     html=site.read()
     return html
-
-
-
