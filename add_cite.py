@@ -1,4 +1,6 @@
 import re
+import urllib
+from urllib import request
 
 
 def add_web_page():
@@ -14,3 +16,12 @@ def add_web_page():
         else:
             print("""Incorrect url! Please, try again.
         Address should start with www., http:// or https://""")
+
+
+def url_to_html(url):
+    site=urllib.request.urlopen(url)
+    html=site.read()
+    return html
+
+
+
