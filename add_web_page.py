@@ -1,16 +1,19 @@
 import re
 
 
-def add_web_page():
+def add_web_page(url):
     """
     Works with web-pages started with www. and protocols (http, https)
     """
-    while True:
-        url = input("Ведите адрес сайта: ")
-        url_check = re.match(r'www.|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
-                             url)
-        if url_check:
-            return url
-        else:
-            print("""Incorrect url! Please, try again.
-        Address should start with www., http:// or https://""")
+    pattern = "r'www.|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'"
+    url_check = re.match(pattern, url)
+    try:
+        if not url_check:
+            raise ValueError
+        return url
+    except ValueError:
+        print('Incorrect url! Please, try again.')
+
+
+add_web_page('www.google.com')
+add_web_page('ww.google.com')  # ошибка
