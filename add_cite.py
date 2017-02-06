@@ -37,7 +37,7 @@ def guess_code(html):
     code = ''
     for i in coding:
         if i not in ['/','\\','=',' ','"',"'"]:
-            code +=i
+            code += i
     return code
 
 
