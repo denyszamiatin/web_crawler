@@ -1,26 +1,26 @@
 import re
-import urllib
-from urllib import request
+import urllib.request
+
+URL_PATTERN = re.compile(
+    r'www.|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F]'
+    r'[0-9a-fA-F]))+'
+)
 
 
-def add_web_page():
+def validate_url(url):
     """
     Works with web-pages started with www. and protocols (http, https)
+    >>> validate_url('www.google.com')
+    'www.google.com'
     """
-    while True:
-        url = input("Ведите адрес сайта: ")
-        url_check = re.match(r'www.|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
-                             url)
-        if url_check:
-            return url
-        else:
-            print("""Incorrect url! Please, try again.
-        Address should start with www., http:// or https://""")
+    if URL_PATTERN.match(url) is None:
+        raise ValueError('Incorrect url! Please, try again.')
+    return url
 
 
-def url_to_html(url):
+def request_url(url):
     '''
-    step 2 open web-site
+    Open web-site
     '''
     site = urllib.request.urlopen(url)
     html = site.read()
@@ -48,3 +48,5 @@ def decode_html(code,html):
     decoded = html.decode(code)
     return decoded
 
+validate_url('www.google.com')
+validate_url('ww.google.com')  # ошибка
