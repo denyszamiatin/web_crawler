@@ -22,3 +22,20 @@ def url_to_html(url):
     site=urllib.request.urlopen(url)
     html=site.read()
     return html
+
+
+def guess_code(html):
+    html=str(html)
+    coding=re.search(r'charset[^>, ]*',html)
+    coding=coding.group(0).lower()[8:]
+    code=''
+    for i in coding:
+        if i not in ['/','\\','=',' ','"',"'"]:
+            code +=i
+    return code
+
+
+def decode_html(code,html):
+    decoded=html.decode(code)
+    return decoded
+
