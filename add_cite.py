@@ -19,16 +19,22 @@ def add_web_page():
 
 
 def url_to_html(url):
-    site=urllib.request.urlopen(url)
-    html=site.read()
+    '''
+    step 2 open web-site
+    '''
+    site = urllib.request.urlopen(url)
+    html = site.read()
     return html
 
 
 def guess_code(html):
-    html=str(html)
-    coding=re.search(r'charset[^>, ]*',html)
-    coding=coding.group(0).lower()[8:]
-    code=''
+    '''
+    step 3 take coding type name
+    '''
+    html = str(html)
+    coding = re.search(r'charset[^>, ]*',html)
+    coding = coding.group(0).lower()[8:]
+    code = ''
     for i in coding:
         if i not in ['/','\\','=',' ','"',"'"]:
             code +=i
@@ -36,6 +42,9 @@ def guess_code(html):
 
 
 def decode_html(code,html):
-    decoded=html.decode(code)
+    '''
+    step 4 use coding name to decode site
+    '''
+    decoded = html.decode(code)
     return decoded
 
