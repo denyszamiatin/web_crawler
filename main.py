@@ -1,6 +1,10 @@
+
 import re
 import urllib.request
 import chardet
+from bs4 import BeautifulSoup
+
+price_list = {}
 
 URL_PATTERN = re.compile(
     r'www.|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F]'
@@ -41,13 +45,11 @@ def guess_encoding(html):
     take coding type name
     '''
     html = str(html)
-    coding = re.search(r'charset[^>, ]*', html) # TODO: charset\s*=\s*['"][\\/]{0,3}(.+)['"]
+    coding = re.search(r'charset[^>, ]*', html)
     coding = coding.group(0).lower()[8:]
-    encoding = ''
-    for i in coding:
-        if i not in ['/', '\\', '=', ' ', '"', "'"]:
-            encoding += i
-    return encoding
+    coding = re.search(r'[^\"\'\\/= ].*[^\"\'\\/= ]',coding)
+    coding = coding.group(0).lower()
+    return coding
 
 
 def decode_html(encoding, html):
@@ -60,15 +62,40 @@ def decode_html(encoding, html):
         encoding = guess_encoding_with_chardet(html)
         return html.decode(encoding)
 
+def get_valid_parent_name(decoded_site, price = 'price', name = 'name'):
+    """used only once on first page"""
+    soup = BeautifulSoup(decoded_site,"html.parser")
+    names=[]
+    prices=[]
+    parents=[]
+    for item in soup.findAll("div", {"class": name}):
+        names.append(item.parent)
+    for item in soup.findAll("div", {"class": price}):
+        prices.append(item.parent)
+    for i in names:
+        if i in prices:
+            parents.append(i)
+            #print (i.attrs)
+    return parents[0]['class'][0]
+
+def make_price_list(decoded_site, parent, price = 'price',name = 'name'):
+    """used on every page"""
+    soup = BeautifulSoup(decoded_site, 'html.parser')
+    for item in soup.findAll("div", {"class": parent}):
+        name_=item.find("div", {"class": name}).text.strip()
+        price_=item.find("div", {"class": price}).text.strip()
+        price_list[name_]=price_
+        print(name_,price_)
+
 
 #validate_url('www.google.com')
 #validate_url('ww.google.com')  # ошибка
 
-
-url = validate_url('http://rozetka.com.ua/')            #utf-8
-#url = validate_url('http://newspaper.jfdaily.com/')    #gb2312
-#url = validate_url('http://news.livedoor.com/')        #euc-jp
+url = validate_url('http://bagsetc.ua/shop/')
 html = request_url(url)
 code = guess_encoding(html)
 decoded_site = decode_html(code, html)
+parent_tag=get_valid_parent_name(decoded_site) #"product-info"
+make_price_list(decoded_site,parent_tag)
 print(code)
+print(parent_tag)
