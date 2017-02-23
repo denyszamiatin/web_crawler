@@ -62,29 +62,25 @@ def decode_html(encoding, html):
         encoding = guess_encoding_with_chardet(html)
         return html.decode(encoding)
 
-def get_valid_parent_name(decoded_site, price = 'price', name = 'name'):
-    """used only once on first page"""
-    soup = BeautifulSoup(decoded_site,"html.parser")
-    names=[]
-    prices=[]
-    parents=[]
-    for item in soup.findAll("div", {"class": name}):
-        names.append(item.parent)
-    for item in soup.findAll("div", {"class": price}):
-        prices.append(item.parent)
-    for i in names:
-        if i in prices:
-            parents.append(i)
-            #print (i.attrs)
-    return parents[0]['class'][0]
 
-def make_price_list(decoded_site, parent, price = 'price',name = 'name'):
+def find_div_by_class(soup, class_):
+    return [item.parent for item in soup.findAll("div", {"class": class_})]
+
+
+def get_valid_parent_name(decoded_site, price='price', name='name'):
+    """used only once on first page"""
+    soup = BeautifulSoup(decoded_site, "html.parser")
+    return [i for i in find_div_by_class(soup, name)
+                if i in find_div_by_class(soup, price)][0]['class'][0]
+
+
+def make_price_list(decoded_site, parent, price='price', name='name'):
     """used on every page"""
     soup = BeautifulSoup(decoded_site, 'html.parser')
     for item in soup.findAll("div", {"class": parent}):
-        name_=item.find("div", {"class": name}).text.strip()
-        price_=item.find("div", {"class": price}).text.strip()
-        price_list[name_]=price_
+        name_ = item.find("div", {"class": name}).text.strip()
+        price_ = item.find("div", {"class": price}).text.strip()
+        price_list[name_] = price_
         print(name_,price_)
 
 
