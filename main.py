@@ -80,8 +80,43 @@ def make_price_list(decoded_site, parent, price='price', name='name'):
     for item in soup.findAll("div", {"class": parent}):
         name_ = item.find("div", {"class": name}).text.strip()
         price_ = item.find("div", {"class": price}).text.strip()
-        price_list[name_] = price_
+        if name_ not in price_list:
+            price_list[name_] = [price_]
+        else:
+            price_list[name_].append(price_)
         print(name_,price_)
+
+def find_sub_links(root,site_name):
+    '''find links in sites in list "root" '''
+    new_links=[]
+    for link in root:
+        try:
+            html = urllib.request.urlopen(link).read()
+            #decoded_site = decode_html(code, html)
+            soup = BeautifulSoup(html,'html.parser')
+            tags = soup('a')
+            for tag in tags:
+                try:
+                    url1 = (tag.get('href', None))
+                    if url1 not in new_links and url1.startswith(site_name):# and url1 not in links:
+                        new_links.append(url1)
+                except AttributeError:
+                    print(tag,' didnt open')
+                    pass
+        except ValueError:
+            print (root,' cant be opened')
+    return new_links
+
+def update_price_list(url_list,code,parent_tag):
+    '''update price-list with many links'''
+    for i in url_list:
+        try:
+            url_ = validate_url(i)
+            html = request_url(url_)
+            decoded_site = decode_html(code, html)
+            make_price_list(decoded_site,parent_tag)
+        except AttributeError:
+            print (i,'cant be opened' )
 
 
 #validate_url('www.google.com')
@@ -93,5 +128,15 @@ code = guess_encoding(html)
 decoded_site = decode_html(code, html)
 parent_tag=get_valid_parent_name(decoded_site) #"product-info"
 make_price_list(decoded_site,parent_tag)
-print(code)
-print(parent_tag)
+#print (len(price_list),'price list length')
+
+
+level_1_depth=find_sub_links([url],url)
+print ('level_1_depth links ', len(level_1_depth))
+update_price_list(level_1_depth,code,parent_tag)
+print (len(price_list),'price list length')
+
+#level_2_depth=find_sub_links(level_1_depth,url)
+#update_price_list(level_2_depth,code,parent_tag)
+#print ('level_2_depth links', len(level_2_depth))
+#print (len(price_list),'price list length')
