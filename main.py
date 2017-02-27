@@ -3,8 +3,9 @@ import re
 import urllib.request
 import chardet
 from bs4 import BeautifulSoup
+import collections
 
-price_list = {}
+price_list = collections.defaultdict(list)
 
 URL_PATTERN = re.compile(
     r'www.|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F]'
@@ -80,43 +81,43 @@ def make_price_list(decoded_site, parent, price='price', name='name'):
     for item in soup.findAll("div", {"class": parent}):
         name_ = item.find("div", {"class": name}).text.strip()
         price_ = item.find("div", {"class": price}).text.strip()
-        if name_ not in price_list:
-            price_list[name_] = [price_]
-        else:
-            price_list[name_].append(price_)
+        price_list[name_].append(price_)
         print(name_,price_)
 
-def find_sub_links(root,site_name):
+
+def get_links_on_page(new_links, html, site_name):
+    soup = BeautifulSoup(html, 'html.parser')
+    tags = soup('a')
+    for tag in tags:
+        url = (tag.get('href', None))
+        if url is not None and url.startswith(
+                site_name):  # and url1 not in links:
+            new_links.add(url)
+
+
+def find_sub_links(root, site_name):
     '''find links in sites in list "root" '''
-    new_links=[]
+    new_links = set()
     for link in root:
         try:
-            html = urllib.request.urlopen(link).read()
+            html = request_url(link)
             #decoded_site = decode_html(code, html)
-            soup = BeautifulSoup(html,'html.parser')
-            tags = soup('a')
-            for tag in tags:
-                try:
-                    url1 = (tag.get('href', None))
-                    if url1 not in new_links and url1.startswith(site_name):# and url1 not in links:
-                        new_links.append(url1)
-                except AttributeError:
-                    print(tag,' didnt open')
-                    pass
+            get_links_on_page(new_links, html, site_name)
         except ValueError:
             print (root,' cant be opened')
     return new_links
 
-def update_price_list(url_list,code,parent_tag):
+
+def update_price_list(urls, code, parent_tag):
     '''update price-list with many links'''
-    for i in url_list:
+    for url in urls:
         try:
-            url_ = validate_url(i)
-            html = request_url(url_)
+            url = validate_url(url)
+            html = request_url(url)
             decoded_site = decode_html(code, html)
-            make_price_list(decoded_site,parent_tag)
+            make_price_list(decoded_site, parent_tag)
         except AttributeError:
-            print (i,'cant be opened' )
+            print (url,'cant be opened' )
 
 
 #validate_url('www.google.com')
@@ -131,7 +132,7 @@ make_price_list(decoded_site,parent_tag)
 #print (len(price_list),'price list length')
 
 
-level_1_depth=find_sub_links([url],url)
+level_1_depth=find_sub_links({url}, url)
 print ('level_1_depth links ', len(level_1_depth))
 update_price_list(level_1_depth,code,parent_tag)
 print (len(price_list),'price list length')
