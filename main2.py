@@ -20,7 +20,8 @@ class Crawler2(Crawler):
             price_ = re.search(r'price: [^\,]*', text)
             if price_:
                 price_ = price_.group(0).lower()[17:].strip()
-            self.price_list[title_].append(price_)
+            with self.lock:
+                self.price_list[title_].append(price_)
             print(title_,price_)
 
 
