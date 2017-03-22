@@ -74,7 +74,8 @@ class Storage:
     def __init__(self, filename):
         self.conn = sqlite3.connect(filename)
         self.cur = self.conn.cursor()
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS Rozetka(
+        self.cur.execute('''DROP TABLE IF EXISTS Rozetka''')
+        self.cur.execute('''CREATE TABLE Rozetka(
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 title TEXT NOT NULL,
                                 price TEXT NOT NULL,
