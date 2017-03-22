@@ -1,2 +1,3 @@
 chardet==2.3.0
 BeautifulSoup4
+Flask
