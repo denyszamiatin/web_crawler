@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Bookmarks</title>
+    <title>RozetkaCrawler</title>
     <link rel="stylesheet" href="../static/main.css">
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
     <script>
@@ -10,14 +10,26 @@
         var d = document.getElementById("btn");
         d.className += " active";
     }
-</script>
+    </script>
 </head>
 <body>
-<div class="container">
-    <a id='btn' class="button shadow" onclick="Proceed()" href="/result" >
-        <i class="fa fa-play" aria-hidden="true"></i>
-    </a>
+
+<div class="select_item">
+    <form method="POST" id='s_pruduct' action="/result">
+        <select name="producer" id="product">
+            {% for title in titles %}
+                <option value="{{ title[0] }}">{{ title[0] }}</option>
+            {% endfor %}
+        </select>
+    </form>
 </div>
+
+<div class="container">
+    <button id='btn' class="button shadow" onclick="Proceed()" form="s_pruduct">
+        <i class="fa fa-play" aria-hidden="true"></i>
+    </button>
+</div>
+
 <script src="https://use.fontawesome.com/d0d7e7dff2.js"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ru">
 <head>
@@ -6,8 +7,12 @@
     <link rel="stylesheet" href="../static/main.css">
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 </head>
+
 <body>
 <div class="container">
+    {% if not data %}
+        <h1 style="margin: 200px 50%;">No such items</h1>
+    {% endif %}
     <ul>
         {% for title, price, img, link in data %}
             <li class="list_item">
@@ -25,6 +30,5 @@
         {% endfor %}
     </ul>
 </div>
-<script src="https://use.fontawesome.com/d0d7e7dff2.js"></script>
 </body>
 </html>

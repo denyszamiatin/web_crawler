@@ -1,4 +1,9 @@
 
+button::-moz-focus-inner {
+  border: 0;
+  outline: none;
+}
+
 ul{
     list-style: none;
 }
@@ -76,6 +81,7 @@ body{
 
 .button{
     background: transparent;
+    border-width: 0;
     cursor: pointer;
     height: 150px;
     margin-left: -75px;
@@ -121,7 +127,7 @@ body{
 
 .button:active,
 .button:focus{
-    outline: none;
+    outline: 0;
 }
 
 .fa{
@@ -144,6 +150,3 @@ body{
     width: 300px;
     height: 200px;
 }
-
-
-
